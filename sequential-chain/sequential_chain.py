@@ -15,8 +15,8 @@ from genai.schemas import GenerateParams
 from genai.credentials import Credentials
 
 
-api_key = "pak-JBNYgbk8dqHemBnU9pV4qq6VNXNLvlwj7NzAZdhZAU4"
-api_endpoint = "https://bam-api.res.ibm.com/v1"
+api_key = "<API KEY>"
+api_endpoint = "<Model Endpoint>"
 creds = Credentials(api_key, api_endpoint=api_endpoint)
 
 paramsSummary = GenerateParams(
