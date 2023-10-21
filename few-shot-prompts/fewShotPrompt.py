@@ -49,8 +49,8 @@ chat_prompt = ChatPromptTemplate.from_messages(
 input_text = "For monthly  data usage of 350GB and 2700 min voice, mno would be"
 request = chat_prompt.format_prompt(plan_details=input_text).to_messages()
 
-api_key = "pak-JBNYgbk8dqHemBnU9pV4qq6VNXNLvlwj7NzAZdhZAU4"
-api_endpoint = "https://bam-api.res.ibm.com/v1"
+api_key = "<API Key>"
+api_endpoint = "<API Endpoint>"
 creds = Credentials(api_key, api_endpoint=api_endpoint)
 
 paramsSummary = GenerateParams(
@@ -64,7 +64,7 @@ paramsSummary = GenerateParams(
 ).dict()
 
 #llm = LangChainInterface(model="meta-llama/llama-2-70b-chat", params=paramsSummary, credentials=creds)
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = '<API KEY>'
 llm = ChatOpenAI(temperature=0)
 result = llm(request)
 
