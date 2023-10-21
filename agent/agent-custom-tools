@@ -1,0 +1,88 @@
+from langchain.agents import load_tools
+from langchain.agents import initialize_agent
+from langchain.agents import AgentType
+from langchain.agents import tool
+from langchain.embeddings import HuggingFaceInstructEmbeddings
+from langchain.vectorstores import Chroma
+from jproperties import Properties
+from langchain.chat_models import ChatOpenAI
+import os
+#genai
+from genai.extensions.langchain import LangChainInterface
+from genai.schemas import GenerateParams
+from genai.credentials import Credentials
+
+prompt_configs = Properties()
+with open('prompt_configs.properties', 'rb') as read_prop:
+    prompt_configs.load(read_prop) 
+
+@tool
+def base_plan_details(query: str) -> str:
+    '''Here is a short "Base Plan" tool documentation which returns a plan details with base products
+    from Base product catalogue.
+    This tool returns values of Data product, Voice Product, SMS Product, VoiceMail Product, 
+    International Roaming Product for ABC or XYZ or PQR Base plans. The plan name and product are provided in query input.'''
+
+    embedding_function = HuggingFaceInstructEmbeddings(
+            #model_name="hkunlp/instructor-large",
+            #model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_name= prompt_configs.get("HuggingFace_Embedding_Model").data,
+            model_kwargs={"device": "cpu"}
+        )
+    db_connection = Chroma(persist_directory='./agent_db/base_plan_db',embedding_function=embedding_function)
+    docs = db_connection.similarity_search(query)
+    print(docs[0].page_content)
+    return docs[0].page_content
+
+@tool
+def vas_plan_details(query: str) -> str:
+    '''Here is a short "Vas Plan" tool documentation which returns a plan details with VAS products 
+    from VAS product catalogue.
+    This tool returns values of vas products such as Hotspot product, Call Forwarding product, 
+    OTT product for ABC or XYZ or PQR Vas plans. The plan name and product are provided in query input.'''
+
+    embedding_function = HuggingFaceInstructEmbeddings(
+            #model_name="hkunlp/instructor-large",
+            #model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_name= prompt_configs.get("HuggingFace_Embedding_Model").data,
+            model_kwargs={"device": "cpu"}
+        )
+    db_connection = Chroma(persist_directory='./agent_db/vas_plan_db',embedding_function=embedding_function)
+    docs = db_connection.similarity_search(query)
+    print(docs[0].page_content)
+    return docs[0].page_content
+
+api_key = "pak-JBNYgbk8dqHemBnU9pV4qq6VNXNLvlwj7NzAZdhZAU4"
+api_endpoint = "https://bam-api.res.ibm.com/v1"
+creds = Credentials(api_key, api_endpoint=api_endpoint)
+
+paramsSummary = GenerateParams(
+    decoding_method="sample",
+    max_new_tokens=300,
+    min_new_tokens=300,
+    stream=False,
+    temperature=0.05,
+    top_k=50,
+    top_p=1,
+).dict()
+
+llm = LangChainInterface(model="meta-llama/llama-2-70b-chat", params=paramsSummary, credentials=creds)
+os.environ['OPENAI_API_KEY'] = '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'
+llm = ChatOpenAI(temperature=0)
+
+
+#tools = load_tools(["wikipedia","llm-math"], llm=llm) 
+tools=[]
+tools.append(base_plan_details)
+tools.append(vas_plan_details)
+print(tools)
+agent = initialize_agent(tools, 
+                         llm, 
+                         agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
+                         verbose=True)
+
+try:
+    agent.run("What is the value for International Roaming in XYZ plan? Return 'Not Available' if answer in 'No'. Return 'Available' if answer in 'Yes'.  ")
+    #agent.run("What is the value for OTT in PQR plan? If answer in 'No' , return 'Not Available' .If answer in 'Yes' , return 'Available'. Else return answer")
+except Exception as error:
+    print("Error::",error)    
