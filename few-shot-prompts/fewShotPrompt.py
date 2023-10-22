@@ -40,12 +40,6 @@ chat_prompt = ChatPromptTemplate.from_messages(
     [system_message_prompt, example_input_one, example_output_one, example_input_two,
      example_output_two,example_input_three,example_output_three,human_message_prompt]
 )
-
-chat_prompt = ChatPromptTemplate.from_messages(
-    [system_message_prompt, example_input_one, example_output_one, example_input_two,
-     example_output_two,example_input_three,example_output_three,human_message_prompt]
-)
-
 input_text = "For monthly  data usage of 350GB and 2700 min voice, mno would be"
 request = chat_prompt.format_prompt(plan_details=input_text).to_messages()
 
