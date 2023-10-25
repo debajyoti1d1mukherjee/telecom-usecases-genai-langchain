@@ -33,8 +33,8 @@ prompt_infos = [
     
 ]
 
-api_key = "pak-JBNYgbk8dqHemBnU9pV4qq6VNXNLvlwj7NzAZdhZAU4"
-api_endpoint = "https://bam-api.res.ibm.com/v1"
+api_key = "<API-KEY>"
+api_endpoint = "<API Endpoint>"
 creds = Credentials(api_key, api_endpoint=api_endpoint)
 
 paramsSummary = GenerateParams(
@@ -44,7 +44,7 @@ paramsSummary = GenerateParams(
     ).dict()
 
 llm = LangChainInterface(model="meta-llama/llama-2-7b", params=paramsSummary, credentials=creds)
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = '<API-KEY>'
 llm = ChatOpenAI(temperature=0)
 
 destination_chains = {}
